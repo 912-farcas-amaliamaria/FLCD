@@ -9,6 +9,7 @@ public class Main {
         symbolTableIdentifiers.add("a");
         symbolTableIdentifiers.add("a");
         symbolTableIdentifiers.add("b");
+        symbolTableIdentifiers.add("abb");
         symbolTableIdentifiers.add("b");
 
         System.out.println("identifiers");
