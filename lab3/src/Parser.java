@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -67,10 +68,11 @@ public class Parser {
                 if(!input.isEmpty()) {
                     try{
                         this.searchForIdentConstReserved(String.valueOf(input));
+                        input = new StringBuilder();
                     }
                     catch (RuntimeException e){
                         System.out.println(e.getMessage());
-                        throw new RuntimeException("Lexical error on line "+ currentLine + " in "+filePath);
+                        throw new RuntimeException("Lexical error on line "+ currentLine + " in "+filePath + " token " + input);
                     }
                 }
                 //input = new StringBuilder();
@@ -80,6 +82,9 @@ public class Parser {
                     token = scanner.next();
                     while (!token.equals("\"")) {
                         input.append(token);
+                        if(!scanner.hasNext()) {
+                            throw new RuntimeException("Lexical error on line "+ currentLine + " in "+filePath + " token " + input);
+                        }
                         token = scanner.next();
                     }
                     input.append(token);
@@ -91,11 +96,14 @@ public class Parser {
                 else if(token.equals("'")){
                     input.append(token);
                     token = scanner.next();
-                    while (!token.equals("'")) {
-                        input.append(token);
-                        token = scanner.next();
-                    }
                     input.append(token);
+                    token=scanner.next();
+                    input.append(token);
+
+                    if(!Objects.equals(token, "'")){
+                        throw new RuntimeException("Lexical error on line "+ currentLine + " in "+filePath + " token " + input);
+                    }
+
                     Tuple pos = symbolTableConstants.add(String.valueOf(input));
                     PIF.add(new Pair<>(-2, pos));
                     input = new StringBuilder();
@@ -129,7 +137,7 @@ public class Parser {
                     input = new StringBuilder();
                 }
                 else{
-                    throw new RuntimeException("Lexical error on line "+ currentLine + " in "+filePath);
+                    throw new RuntimeException("Lexical error on line "+ currentLine + " in "+filePath + " token " + token);
                 }
             }
         }
